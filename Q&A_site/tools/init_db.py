@@ -11,7 +11,7 @@ from apps.users.models import User
 from qa_site.settings import database
 
 database = MySQLDatabase(
-    'my_db', host="139.196.161.70", port=3306, user="root", password="root"
+    'my_db', host="127.0.0.1", port=3306, user="root", password="root"
 )
 
 def init():
