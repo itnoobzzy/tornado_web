@@ -16,7 +16,7 @@ settings = {
     # 模板路径配置文件
     "template_path": "templates",
     "db": {
-        "host": "139.196.161.70",
+        "host": "127.0.0.1",
         "user": "root",
         "password": "root",
         "db": "my_db",
@@ -28,5 +28,5 @@ settings = {
 }
 
 database = peewee_async.MySQLDatabase(
-    'my_db', host='139.196.161.70', port=3306, user="root", password="root"
+    'my_db', host='127.0.0.1', port=3306, user="root", password="root"
 )
