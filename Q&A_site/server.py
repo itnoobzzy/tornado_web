@@ -9,9 +9,10 @@ from tornado import (
     web,
     ioloop,
 )
+from peewee_async import Manager
 
 from qa_site.urls import urlpattern
-from qa_site.settings import settings
+from qa_site.settings import settings, database
 
 class MainHandler(web.RequestHandler):
 
@@ -32,5 +33,12 @@ if __name__ == '__main__':
     wtforms_json.init()
 
     app = web.Application(urlpattern, debug=True, **settings)
+
+    # 使用异步ORM
+    objects = Manager(database)
+    database.set_allow_sync(False)
+    # 将对象设置为app全局属性
+    app.objects = objects
+
     app.listen(8000)
     ioloop.IOLoop.current().start()
