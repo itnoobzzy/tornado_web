@@ -7,15 +7,17 @@
 
 import json
 from random import choice
+from datetime import datetime
+
 from tornado.web import RequestHandler
+import jwt
 
 from apps.users.forms import (
     SmsCodeForm,
-    RegisterForm
+    RegisterForm,
+    LoginFrom
 )
-from apps.users.models import (
-    User
-)
+from apps.users.models import User
 from apps.utils.AsyncYunpian import Yunpian
 from qa_site.handler import RedisHandler
 
@@ -103,3 +105,61 @@ class RegisterHandler(RedisHandler):
                 ret_data[field] = register_form[field][0]
 
         await self.finish(ret_data)
+
+
+class LoginHandler(RedisHandler):
+    """
+    登录功能
+    """
+    async def post(self, *args, **kwargs):
+        ret_data = {}
+        param = self.request.body.decode("utf-8")
+        param = json.loads(param)
+        form = LoginFrom.from_json(param)
+
+        if form.validate():
+            mobile = form.mobile.data
+            password = form.password.data
+
+            try:
+                user = await self.application.objects.get(User, mobile=mobile)
+                if not user.password.check_password(password):
+                    self.set_status(400)
+                    ret_data["non_fields"] = "用户名或密码错误"
+                else:
+                    # 登录成功，生成json web token
+                    pay_load = {
+                        "id": user.id,
+                        "nick_name": user.nick_name,
+                        "exp": datetime.utcnow()
+                    }
+                    token = jwt.encode(pay_load, self.settings["secret_key"], algorithm='HS256')
+                    ret_data["id"] = user.id
+                    # 用户如果设置匿名就返回匿名
+                    if user.nick_name is not None:
+                        ret_data["nick_name"] = user.nick_name
+                    else:
+                        ret_data["nick_name"] = user.mobile
+                    ret_data["token"] = token
+            except User.DoesNotExist as e:
+                self.set_status(400)
+                ret_data["mobile"] = "用户不存在"
+
+            await self.finish(ret_data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

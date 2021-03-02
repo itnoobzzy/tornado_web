@@ -24,7 +24,9 @@ settings = {
     },
     "redis": {
         "host": "127.0.0.1"
-    }
+    },
+    "jwt_expire": 7*24*3600,
+    "secret_key":"ZGGA#Mp4yL4w5CDu",
 }
 
 database = peewee_async.MySQLDatabase(
