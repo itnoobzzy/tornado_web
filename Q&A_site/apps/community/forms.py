@@ -3,7 +3,7 @@
 # @File  : forms.py
 # @Author: itnoobzzy
 # @Date  : 2021/2/27
-# @Desc  : 表单校验
+# @Desc  : 小组，评论表单校验
 
 from wtforms_tornado import Form
 from wtforms import (
@@ -13,7 +13,6 @@ from wtforms import (
 )
 from wtforms.validators import (
     DataRequired,
-    Regexp,
     AnyOf,
     Length
 )
@@ -27,3 +26,15 @@ class CommunityGroupForm(Form):
 
 class GroupApplyForm(Form):
     apply_reason = StringField("申请理由", validators=[DataRequired("请输入申请理由")])
+
+class PostForm(Form):
+    title = StringField("标题", validators=[DataRequired("请输入标题")])
+    content = StringField("内容", validators=[DataRequired("请输入内容")])
+
+class PostComentForm(Form):
+    content = StringField("内容", validators=[DataRequired("请输入评论内容"),
+                                            Length(min=3, message="内容不能少于3个字符")])
+class CommentReplyForm(Form):
+    replyed_user = IntegerField("回复用户", validators=[DataRequired("请输入回复用户")])
+    content = StringField("内容", validators=[DataRequired("请输入评论内容"),
+                                            Length(min=3, message="内容不能少于3个字符")])

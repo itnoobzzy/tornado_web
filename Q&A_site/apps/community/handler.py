@@ -131,10 +131,75 @@ class GroupMemberHandler(RedisHandler):
         await self.finish(ret_data)
 
 
+class GroupDetailHandler(RedisHandler):
+    """
+    小组详情
+    """
+
+    @authenticated_async
+    async def get(self, group_id, *args, **kwargs):
+        # 获取小组基本信息
+        ret_data = {}
+        try:
+            group = await self.application.objects.get(CommunityGroup, id=int(group_id))
+            item_dict= {}
+            item_dict["name"] = group.name
+            item_dict["id"] = group.id
+            item_dict["desc"] = group.desc
+            item_dict["notice"] = group.notice
+            item_dict["member_nums"] = group.member_nums
+            item_dict["post_nums"] = group.post_nums
+            item_dict["front_images"] = "{}/media/{}".format(self.settings["SITE_URL"], group.front_image)
+            ret_data = item_dict
+
+        except CommunityGroup.DoesNotEixst as e:
+            self.set_status(404)
+
+        await self.finish(ret_data)
 
 
+class PostHandler(RedisHandler):
+    """
+    帖子详情，发表帖子
+    """
 
+    @authenticated_async
+    async def get(self, *args, **kwargs):
+        pass
 
+    @authenticated_async
+    async def post(self, group_id, *args, **kwargs):
+        """
+        发表帖子
+        :param group_id: 发帖的小组id
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        ret_data = {}
+
+        try:
+            # 判断小组是否存在，是否为小组内成员
+            group = await self.application.objects.get(CommunityGroup, id=int(group_id))
+
+            group_number = await self.application.objects.get(CommunityGroupMember, user=self.current_user, community=group, status="agree")
+
+            param = self.request.body.decode("utf-8")
+            param = json.loads(param)
+            form = PostForm.from_json(param)
+            if form.validate():
+                post = await self.application.objects.create(Post, user=self.current_user,title=form.title.data,
+                                                             content=form.content.data, group=group)
+                ret_data["id"] = post.id
+            else:
+                self.set_status(400)
+                for field in form.errors:
+                    ret_data[field] = form.errors[field][0]
+        except CommunityGroup.DoesNotExist as e:
+            self.set_status(404)
+        except CommunityGroupMember.DoesNotExist as e:
+            self.set_status(403)
+        await self.finish(ret_data)
 
 
 

@@ -9,10 +9,15 @@ from tornado.web import url
 
 from apps.community.handler import (
     GroupHandler,
-    GroupMemberHandler
+    GroupMemberHandler,
+    GroupDetailHandler,
+    PostHandler
 )
 
 urlpattern = (
     url("/groups/", GroupHandler),
+    url("/groups/([0-9]+)/", GroupDetailHandler),
     url("/groups/([0-9]+)/members/", GroupMemberHandler),
+    # 发表帖子
+    url("/groups/([0-9]+)/posts/", PostHandler)
 )

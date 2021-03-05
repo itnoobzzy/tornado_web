@@ -60,9 +60,28 @@ def apply_group(group_id, apply_reason):
     print(res.status_code)
     print(json.loads(res.text))
 
+def get_group(group_id):
+    """
+    小组详情
+    :param group_id:
+    :return:
+    """
+    res = requests.get("{}/groups/{}/".format(web_url, group_id), headers=headers)
+    print(res.status_code)
+    print(json.loads(res.text))
 
-
+def add_post(group_id):
+    #发帖
+    data = {
+        "title":"tornado从入门到实战",
+        "content":"tornado从入门到实战"
+    }
+    res = requests.post("{}/groups/{}/posts/".format(web_url, group_id), headers=headers, json=data)
+    print(res.status_code)
+    print(json.loads(res.text))
 
 if __name__ == '__main__':
     # new_group()
-    apply_group(2, '理由')
+    # apply_group(2, '理由')
+    # get_group(2)
+    add_post(2)
