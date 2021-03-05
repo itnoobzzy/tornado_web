@@ -94,6 +94,42 @@ class GroupHandler(RedisHandler):
         await self.finish(ret_data)
 
 
+class GroupMemberHandler(RedisHandler):
+    """
+    申请加入小组
+    """
+
+    @authenticated_async
+    async def post(self, group_id, *args, **kwargs):
+        ret_data = {}
+        param = self.request.body.decode("utf-8")
+        param = json.loads(param)
+        form = GroupApplyForm.from_json(param)
+
+        if form.validate():
+            try:
+                # 查询加入的小组是否存在
+                group = await self.application.objects.get(CommunityGroup, id=int(group_id))
+                # 查询该用户是否已经加入
+                existed = await self.application.objects.get(CommunityGroupMember, community=group, user=self.current_user)
+            except CommunityGroup.DoesNotExist as e:
+                self.set_status(404) # 小组不存在
+            except CommunityGroupMember.DoesNotExist as e:
+                # 该用户未加入
+                community_member = await self.application.objects.create(
+                    CommunityGroupMember,
+                    community=group,
+                    user=self.current_user,
+                    apply_reason=form.apply_reason.data
+                )
+                ret_data["id"] = community_member.id
+        else:
+            self.set_status(400)
+            for field in form.errors:
+                ret_data[field] = form.errors[field][0]
+
+        await self.finish(ret_data)
+
 
 
 

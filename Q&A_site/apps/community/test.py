@@ -29,6 +29,10 @@ headers = {
 }
 
 def new_group():
+    """
+    测试创建小组
+    :return:
+    """
     files = {
         "front_image": open("/home/tornado_site/1.jpg", "rb")
     }
@@ -42,6 +46,23 @@ def new_group():
     print(res.status_code)
     print(json.loads(res.text))
 
+def apply_group(group_id, apply_reason):
+    """
+    测试加入小组
+    :param group_id: 小组id
+    :param apply_reason: 加入理由
+    :return:
+    """
+    data = {
+        "apply_reason": apply_reason,
+    }
+    res = requests.post("{}/groups/{}/members/".format(web_url, group_id), headers=headers, json=data)
+    print(res.status_code)
+    print(json.loads(res.text))
+
+
+
 
 if __name__ == '__main__':
-    new_group()
+    # new_group()
+    apply_group(2, '理由')

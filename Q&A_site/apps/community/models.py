@@ -14,6 +14,9 @@ from apps.users.models import User
 
 
 class CommunityGroup(BaseModel):
+    """
+    小组
+    """
     creator = ForeignKeyField(User, verbose_name="创建者")
     name = CharField(max_length=100, null=True, verbose_name="名称")
     category = CharField(max_length=20, verbose_name="分类", null=True)
@@ -38,6 +41,9 @@ HANDLE_STATUS = (
     ("refuse", "拒绝")
 )
 class CommunityGroupMember(BaseModel):
+    """
+    申请加入小组
+    """
     user = ForeignKeyField(User, verbose_name="用户")
     community = ForeignKeyField(CommunityGroup, verbose_name="社区")
     status = CharField(choices=HANDLE_STATUS, max_length=10, null=True, verbose_name="处理状态")
