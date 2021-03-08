@@ -12,6 +12,7 @@ from tornado.web import (
 
 from apps.users import urls as user_urls
 from apps.community import urls as community_urls
+from apps.ueditor import urls as ueditor_urls
 from qa_site.settings import settings
 
 urlpattern = [
@@ -20,3 +21,4 @@ urlpattern = [
 
 urlpattern += user_urls.urlpattern
 urlpattern += community_urls.urlpattern
+urlpattern += ueditor_urls.urlpattern
